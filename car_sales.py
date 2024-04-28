@@ -169,7 +169,7 @@ from sklearn.tree import DecisionTreeRegressor
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.experimental import enable_hist_gradient_boosting
 from sklearn.ensemble import HistGradientBoostingRegressor,GradientBoostingRegressor
-from sklearn.svm import SVC
+from sklearn.svm import SVR
 from xgboost import XGBRegressor  
 from catboost import CatBoostRegressor 
 from lightgbm import LGBMRegressor  
@@ -184,7 +184,7 @@ Models=[('Linear Regression', LinearRegression()),
 ('Random Forest Regressor',RandomForestRegressor()),
 ('Hist GradientBoost Regressor', HistGradientBoostingRegressor()),
 ('Gradient Boosting Regressor',GradientBoostingRegressor()),
-('Support Vector Machine',SVC()),
+('Support Vector Machine',SVR()),
 ('XGBoost',XGBRegressor()),
 ('Catboost',CatBoostRegressor(verbose=False)),
 ('lightgbm',LGBMRegressor()),
