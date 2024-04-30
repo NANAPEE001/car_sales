@@ -9,6 +9,7 @@ from imblearn.over_sampling import RandomOverSampler
 from sklearn.preprocessing import LabelEncoder
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import classification_report
+from sklearn.metrics import accuracy_score,confusion_matrix
 from sklearn.linear_model import LinearRegression
 from sklearn.impute import SimpleImputer
 from sklearn.metrics import r2_score
@@ -127,7 +128,7 @@ cross_tab.plot(kind='bar')
 plt.title("relationship between gender and Color")
 plt.show()
 
-#DETERMINE THE PRICE OF A CAR
+#PREDICTING THE PRICE OF A CAR
 
 #Dropping columns not needed for regression
 sales_df=sales_df.drop(['Car_id','Date','Customer Name','Gender','Dealer_Name','Annual Income','Dealer_No ','Phone'],axis=1)
@@ -160,7 +161,7 @@ print(y.shape)
 x_train,x_test,y_train,y_test=train_test_split(x,y,test_size=0.2,random_state=0)
 print(x_train.shape)
 print(y_train.shape)
-#IMPORTING PACKAGES
+#IMPORTING MODELS
 from sklearn.linear_model import LinearRegression
 from sklearn.linear_model import Ridge
 from sklearn.linear_model import Lasso
@@ -205,3 +206,80 @@ for model_name,model in Models:
     plt.ylabel("Predicted labels")
     plt.title("True vs Predicted Values using R2 square")
     plt.show()
+
+
+#PREDICT THE COMPANY 
+#Dropping columns not needed for classification
+sales_df=sales_df.drop(['Car_id','Date','Customer Name','Dealer_Name','Dealer_No ','Phone'],axis=1)
+print(sales_df)
+
+#Rearranging columns
+col=sales_df.pop("Company")
+sales_df["Company"]=col
+print(sales_df)
+
+#Encoding
+label = LabelEncoder()
+sales_df['Gender']=label.fit_transform(sales_df['Gender'])
+sales_df['Model']=label.fit_transform(sales_df['Model'])
+sales_df['Engine']=label.fit_transform(sales_df['Engine'])
+sales_df['Transmission']=label.fit_transform(sales_df['Transmission'])
+sales_df['Color']=label.fit_transform(sales_df['Color'])
+sales_df['Body Style']=label.fit_transform(sales_df['Body Style'])
+sales_df['Dealer_Region']=label.fit_transform(sales_df['Dealer_Region'])
+
+print(sales_df)
+
+#DEFINING DEPENDENT AND INDEPENDENT VALUES
+x=sales_df.iloc[:,:-1]
+y=sales_df.iloc[:,-1]
+print(x.shape)
+print(y.shape)
+
+#DATA SPLITTING
+x_train,x_test,y_train,y_test=train_test_split(x,y,test_size=0.2,random_state=0)
+print(x_train.shape)
+print(y_train.shape)
+
+#importing classification models
+from sklearn.linear_model import LogisticRegression
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.naive_bayes import GaussianNB
+import sklearn.tree as tree
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.experimental import enable_hist_gradient_boosting
+from sklearn.ensemble import HistGradientBoostingClassifier,GradientBoostingClassifier
+from sklearn.svm import SVC
+from xgboost import XGBClassifier 
+from catboost import CatBoostClassifier
+from lightgbm import LGBMClassifier  
+from sklearn.neural_network import MLPClassifier 
+
+
+models=[('Logistic Regression', LogisticRegression()),
+('K Neighbors', KNeighborsClassifier()),
+('Naive Bayes', GaussianNB()),
+('Decision Tree Classifier', DecisionTreeClassifier(max_depth=3,random_state=150)),
+('Random Forest Classifier', RandomForestClassifier(n_estimators=2000,max_depth=500,random_state=200)),
+('Hist GradientBoost Classifier', HistGradientBoostingClassifier(max_iter=100,learning_rate=0.1,max_depth=6,random_state=42)),
+('Gradient Boosting Classifier', GradientBoostingClassifier()),
+('Support Vector Machine', SVC()),
+#('XGBoost', XGBClassifier()),
+('Catboost', CatBoostClassifier(verbose=False)),
+('lightgbm', LGBMClassifier()),
+('Multi Layer Perceptron', MLPClassifier())
+]
+
+for name,model in models:
+    model.fit(x_train,y_train)
+    y_pred=model.predict(x_test)
+    accuracy=accuracy_score(y_test,y_pred)
+    conf_mat=confusion_matrix(y_test,y_pred)
+    print(f"model: {name}")
+    print(f"accuracy is {accuracy}")
+    plt.figure(figsize=(5,4))
+    sns.heatmap(conf_mat,cmap="coolwarm",fmt='g',annot=True)
+    plt.xlabel("Predicted labels")
+    plt.ylabel("Actual labels")
+    plt.title(f"Confusion matrix for {name}")
